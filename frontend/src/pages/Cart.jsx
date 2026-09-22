@@ -1,0 +1,10 @@
+import { Link,useNavigate } from 'react-router-dom';
+import { Minus,Plus,Trash2,ArrowRight,ShoppingBag } from 'lucide-react';
+import { useCart } from '../context/CartContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
+
+export default function Cart(){
+ const {items,total,updateQuantity,removeFromCart}=useCart(); const {user}=useAuth(); const navigate=useNavigate(); const shipping=total>=100000?0:5000;
+ if(!items.length)return <main className="container page"><div className="empty-state large"><ShoppingBag size={42}/><h1>Your cart is empty</h1><p>Discover something you love and add it to your cart.</p><Link className="btn btn-primary" to="/products">Continue shopping</Link></div></main>;
+ return <main className="container page"><div className="page-title"><span className="eyebrow">YOUR BAG</span><h1>Shopping cart</h1></div><div className="cart-layout"><div className="cart-items">{items.map(item=><div className="cart-item" key={item.product}><img src={item.image} alt={item.name}/><div className="cart-main"><Link to={`/products/${item.product}`}><h3>{item.name}</h3></Link><span>₦{item.price.toLocaleString()}</span><div className="cart-controls"><div className="qty"><button onClick={()=>updateQuantity(item.product,item.quantity-1)}><Minus size={15}/></button><b>{item.quantity}</b><button onClick={()=>updateQuantity(item.product,item.quantity+1)}><Plus size={15}/></button></div><button className="remove" onClick={()=>removeFromCart(item.product)}><Trash2 size={16}/> Remove</button></div></div><strong>₦{(item.price*item.quantity).toLocaleString()}</strong></div>)}</div><aside className="summary"><h2>Order summary</h2><div><span>Subtotal</span><b>₦{total.toLocaleString()}</b></div><div><span>Shipping</span><b>{shipping?'₦5,000':'Free'}</b></div><hr/><div className="summary-total"><span>Total</span><strong>₦{(total+shipping).toLocaleString()}</strong></div><button className="btn btn-primary btn-wide" onClick={()=>user?navigate('/checkout'):navigate('/login',{state:{from:'/checkout'}})}>Checkout <ArrowRight size={17}/></button><Link className="continue-link" to="/products">Continue shopping</Link></aside></div></main>
+}
